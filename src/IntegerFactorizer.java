@@ -1,8 +1,9 @@
 import java.math.BigInteger;
+import java.util.function.Function;
 
 public class IntegerFactorizer {
-	protected static final BigInteger one = new BigInteger("1");
-	protected static final BigInteger two = new BigInteger("2");
+	protected static final BigInteger one = BigInteger.valueOf(1);
+	protected static final BigInteger two = BigInteger.valueOf(2);
 
 	/**
 	 * Pollard P-1
@@ -28,6 +29,26 @@ public class IntegerFactorizer {
 			return d;
 		} else {
 			return null;
+		}
+			
+	}
+	
+	public static BigInteger pollardRho(BigInteger n, BigInteger x1,  Function<BigInteger, BigInteger> f){
+		BigInteger x = x1;
+		BigInteger xl = f.apply(x).mod(n);
+		BigInteger p = x.subtract(xl).gcd(n);
+	
+		while(p.compareTo(one) == 0){
+			x = f.apply(x).mod(n);
+			xl = f.apply(xl).mod(n);
+			xl = f.apply(xl).mod(n);
+			p = x.subtract(xl).gcd(n);
+		}
+		
+		if (p.compareTo(n) == 0)	{
+			return null;
+		} else {
+			return p;
 		}
 			
 	}
