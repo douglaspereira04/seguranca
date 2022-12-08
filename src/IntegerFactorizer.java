@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.util.List;
 import java.util.function.Function;
 
 public class IntegerFactorizer {
@@ -22,6 +23,30 @@ public class IntegerFactorizer {
 				a = a.modPow(j, n);
 			}
 			j = j.add(one);
+		}
+		d = a.subtract(one).gcd(n);
+		
+		if (d.compareTo(one) > 0 && d.compareTo(n) < 0)	{
+			return d;
+		} else {
+			return null;
+		}
+			
+	}
+	
+	/**
+	 * Pollard P-1 given j prime numbers list
+	 * @param n
+	 * @param B
+	 * @param primeCertaintyFactor
+	 * @return prime factor or null when fails
+	 */
+	public static BigInteger pollardPMinusOne(BigInteger n, BigInteger B, List<BigInteger> primeList){
+		BigInteger a = two;
+		BigInteger d = null;
+	
+		for (BigInteger j : primeList) {
+			a = a.modPow(j, n);
 		}
 		d = a.subtract(one).gcd(n);
 		
