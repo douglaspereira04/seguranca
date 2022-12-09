@@ -2,7 +2,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-import java.security.SecureRandom;
 
 public class IntegerFactorizer {
 	public static final Random rand = new Random();
@@ -162,12 +161,12 @@ public class IntegerFactorizer {
 
 
 	/**
-	 * Gera n resitente a fatoracao pollard p-1
-	 * @param size em bytes
+	 * Generates n resistant to pollard p-1 factorization 
+	 * @param size bytes
 	 * @param primalityCertainty
 	 * @return
 	 */
-	public static BigInteger pollardPMinusOneStrong(int size, int primalityCertainty) {
+	public static BigInteger pollardPMinusOneStrongN(int size, int primalityCertainty) {
 		byte[] bytes = new byte[size/2];
 		BigInteger p1 = null, p = null;
 		BigInteger q1 = null, q = null;
@@ -189,6 +188,87 @@ public class IntegerFactorizer {
 		
 		return p.multiply(q);
 	}
+	
+	/**
+	 * Generates n and b weak against Wiener's attack
+	 * @param size
+	 * @param primalityCertainty
+	 * @return [n, b]
+	 */
+	public static BigInteger[] wienersWeakRSAParameters(int size, int primalityCertainty) {
+		
+		byte[] bytes = new byte[size/2];
+		byte[] abytes = new byte[size/4];
+		BigInteger p = null, q = null, n = null, a = null, b = null, phin = null;
 
+		do {
+
+			do {
+				rand.nextBytes(bytes);
+				p = new BigInteger(bytes);
+			} while (p.compareTo(BigInteger.ONE) <= 0 || !p.isProbablePrime(primalityCertainty) );
+			
+			do {
+				rand.nextBytes(bytes);
+				q = new BigInteger(bytes);
+			} while (q.compareTo(BigInteger.ONE) <= 0 || !q.isProbablePrime(primalityCertainty) );
+			
+		}while(!(q.compareTo(p)<0 && p.compareTo(q.multiply(BigInteger.TWO))<0));//precisa-se de q < p < 2q
+		
+		phin = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+		n = p.multiply(q);
+		
+		//escolhe a pequeno
+		do {
+			rand.nextBytes(abytes);
+			a = new BigInteger(abytes);
+		} while (
+				!(
+					a.compareTo(BigInteger.ONE) > 0 
+					&& a.compareTo(phin) < 0
+				) 
+				|| a.gcd(phin).compareTo(BigInteger.ONE) != 0 
+				|| a.multiply(BigInteger.valueOf(3)).compareTo(n.sqrt().sqrt()) > 0);//precisa-se de 3a < n^(1/4) 
+		
+		b = a.modInverse(phin);
+		
+		return new BigInteger[] {p,q,n,a,b};
+	}
+	
+	
+	/**
+	 * Generates random rsa parameters
+	 * @param size
+	 * @param primalityCertainty
+	 * @return
+	 */
+	public static BigInteger[] randomRSAParameters(int size, int primalityCertainty) {
+		
+		byte[] bytes = new byte[size/2];
+		BigInteger p = null, q = null, n = null, a = null, b = null, phin = null;
+
+		do {
+			rand.nextBytes(bytes);
+			p = new BigInteger(bytes);
+		} while (p.compareTo(BigInteger.ONE) <= 0 || !p.isProbablePrime(primalityCertainty) );
+		
+		do {
+			rand.nextBytes(bytes);
+			q = new BigInteger(bytes);
+		} while (q.compareTo(BigInteger.ONE) <= 0 || !q.isProbablePrime(primalityCertainty) );
+		
+		phin = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+		n = p.multiply(q);
+		
+		//escolhe a pequeno
+		do {
+			rand.nextBytes(bytes);
+			a = new BigInteger(bytes);
+		} while (!(a.compareTo(BigInteger.ONE) > 0 && a.compareTo(phin) < 0) || a.gcd(phin).compareTo(BigInteger.ONE) != 0);
+		
+		b = a.modInverse(phin);
+		
+		return new BigInteger[] {p,q,n,a,b};
+	}
 
 }
