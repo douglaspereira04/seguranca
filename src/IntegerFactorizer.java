@@ -1,8 +1,11 @@
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
+import java.security.SecureRandom;
 
 public class IntegerFactorizer {
+	public static final Random rand = new Random();
 
 	/**
 	 * Pollard P-1
@@ -136,4 +139,54 @@ public class IntegerFactorizer {
 		}
 		return null;
 	}
+
+	
+	public static BigInteger randomN(int size, int primalityCertainty) {
+		byte[] bytes = new byte[size/2];
+		BigInteger p = null, q = null;
+
+		do {
+			rand.nextBytes(bytes);
+			p = new BigInteger(bytes);
+		} while (p.compareTo(BigInteger.ONE) <= 0 || !p.isProbablePrime(primalityCertainty) );
+		
+		do {
+			rand.nextBytes(bytes);
+			q = new BigInteger(bytes);
+		} while (q.compareTo(BigInteger.ONE) <= 0 || !q.isProbablePrime(primalityCertainty) );
+		
+		
+		return p.multiply(q);
+	}
+
+
+	/**
+	 * Gera n resitente a fatoracao pollard p-1
+	 * @param size em bytes
+	 * @param primalityCertainty
+	 * @return
+	 */
+	public static BigInteger pollardPMinusOneStrong(int size, int primalityCertainty) {
+		byte[] bytes = new byte[size/2];
+		BigInteger p1 = null, p = null;
+		BigInteger q1 = null, q = null;
+
+		do {
+			rand.nextBytes(bytes);
+			p1 = new BigInteger(bytes);
+			p = p1.multiply(BigInteger.TWO).add(BigInteger.ONE);
+			
+		} while (p.compareTo(BigInteger.ONE) <= 0 || !(p1.isProbablePrime(primalityCertainty) && p.isProbablePrime(primalityCertainty)) );
+		
+		do {
+			rand.nextBytes(bytes);
+			q1 = new BigInteger(bytes);
+			q = q1.multiply(BigInteger.TWO).add(BigInteger.ONE);
+			
+		} while (q.compareTo(BigInteger.ONE) <= 0 || !(q1.isProbablePrime(primalityCertainty) && q.isProbablePrime(primalityCertainty)) );
+		
+		
+		return p.multiply(q);
+	}
+	
 }

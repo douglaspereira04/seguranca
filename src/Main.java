@@ -9,8 +9,29 @@ public class Main {
 		BigInteger n = BigInteger.valueOf(1403);
 		BigInteger B = n.sqrt();
 
-		BigInteger p = IntegerFactorizer.pollardPMinusOne(n, B, 8);
-		System.out.println(p);
+
+		BigInteger p;
+		int randomHits = 0, strongHits = 0;
+		int testes = 200;
+		for (int i = 0; i < testes; i++) {
+			n = IntegerFactorizer.pollardPMinusOneStrong(4, 8);
+			System.out.println(n);
+			p = IntegerFactorizer.pollardPMinusOne(n, B, 8);
+			System.out.println(p);
+			if(p != null) {
+				strongHits++;
+			}
+			n = IntegerFactorizer.randomN(4, 8);
+			System.out.println(n);
+			p = IntegerFactorizer.pollardPMinusOne(n, B, 8);
+			System.out.println(p);
+			if(p != null) {
+				randomHits++;
+			}
+		}
+		System.out.println("random: "+randomHits*100.0/testes+"%");
+		System.out.println("strong: "+strongHits*100.0/testes+"%");
+		
 		
 
 		Function<BigInteger, BigInteger> f = x -> x.pow(x.intValue()).add(BigInteger.valueOf(1));
