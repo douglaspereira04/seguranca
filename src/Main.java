@@ -19,7 +19,7 @@ public class Main {
 		p = IntegerFactorizer.pollardRho(n, x1, f);
 		System.out.println(p);
 		
-		p = RSAAttack.wienersAttack(BigInteger.valueOf(160523347), BigInteger.valueOf(60728973));
+		p = IntegerFactorizer.wieners(BigInteger.valueOf(160523347), BigInteger.valueOf(60728973));
 		System.out.println(p);
 	}
 }
