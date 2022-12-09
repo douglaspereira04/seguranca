@@ -19,13 +19,6 @@ public class Main {
 		p = IntegerFactorizer.pollardRho(n, x1, f);
 		System.out.println(p);
 		
-		List<BigInteger> continuedFractionExpansion = RSAAttack.continuedFractionExpansion(BigInteger.valueOf(160523347),BigInteger.valueOf(60728973));
-		System.out.print("[");
-		for (BigInteger v : continuedFractionExpansion) {
-			System.out.print(","+v);
-		}
-		System.out.println("]");
-		
 		p = RSAAttack.wienersAttack(BigInteger.valueOf(160523347), BigInteger.valueOf(60728973));
 		System.out.println(p);
 	}
