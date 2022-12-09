@@ -17,8 +17,9 @@ public class Main {
 		//BigInteger p = IntegerFactorizer.wieners(BigInteger.valueOf(160523347), BigInteger.valueOf(60728973));
 		
 		Function<BigInteger, BigInteger> f = x -> x.pow(2).add(BigInteger.valueOf(1));
-		
-		testPollardRho(1000, 4,  b -> b.sqrt(), f, 4);
+
+		testPollardRho(500, 4,  b -> b.sqrt(), f, 4);
+		testPollardRho(500, 8,  b -> b.sqrt().sqrt(), f, 4);
 		testPollardPMinus1(200, 4, b -> b.sqrt(),4);
 		testPollardPMinus1(200, 8, b -> b.sqrt().sqrt(),4);
 		testPollardPMinus1(200, 16, b -> b.sqrt().sqrt().sqrt(),4);
@@ -158,7 +159,7 @@ public class Main {
 				
 				for (int j = 0; j < tests/threadAmount; j++) {
 					
-					parameters = IntegerFactorizer.wienersWeakRSAParameters(8, 8);
+					parameters = WienersAttack.wienersWeakRSAParameters(8, 8);
 					p = parameters[0];
 					q = parameters[1];
 					n = parameters[2];
@@ -167,19 +168,19 @@ public class Main {
 					
 					BigInteger pl;
 
-					pl = IntegerFactorizer.wieners(n,b);
+					pl = WienersAttack.wieners(n,b);
 					if(pl != null && (pl.compareTo(p) == 0 || pl.compareTo(q) == 0) ) {
 						weakHits.incrementAndGet();
 					}
 					
-					parameters = IntegerFactorizer.randomRSAParameters(8, 8);
+					parameters = WienersAttack.randomRSAParameters(8, 8);
 					p = parameters[0];
 					q = parameters[1];
 					n = parameters[2];
 					a = parameters[3];
 					b = parameters[4];
 
-					pl = IntegerFactorizer.wieners(n,b);
+					pl = WienersAttack.wieners(n,b);
 					if(pl != null && (pl.compareTo(p) == 0 || pl.compareTo(q) == 0) ) {
 						randomHits.incrementAndGet();
 					}
