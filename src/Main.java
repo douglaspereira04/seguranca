@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.util.List;
 import java.util.function.Function;
 
 public class Main {
@@ -17,6 +18,15 @@ public class Main {
 		BigInteger x1 = BigInteger.valueOf(1);
 		p = IntegerFactorizer.pollardRho(n, x1, f);
 		System.out.println(p);
+		
+		List<BigInteger> continuedFractionExpansion = RSAAttack.continuedFractionExpansion(BigInteger.valueOf(160523347),BigInteger.valueOf(60728973));
+		System.out.print("[");
+		for (BigInteger v : continuedFractionExpansion) {
+			System.out.print(","+v);
+		}
+		System.out.println("]");
+		
+		p = RSAAttack.wienersAttack(BigInteger.valueOf(160523347), BigInteger.valueOf(60728973));
+		System.out.println(p);
 	}
-
 }

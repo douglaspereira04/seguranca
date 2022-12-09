@@ -3,8 +3,6 @@ import java.util.List;
 import java.util.function.Function;
 
 public class IntegerFactorizer {
-	protected static final BigInteger one = BigInteger.valueOf(1);
-	protected static final BigInteger two = BigInteger.valueOf(2);
 
 	/**
 	 * Pollard P-1
@@ -14,19 +12,19 @@ public class IntegerFactorizer {
 	 * @return prime factor or null when fails
 	 */
 	public static BigInteger pollardPMinusOne(BigInteger n, BigInteger B, int primeCertaintyFactor){
-		BigInteger a = two;
-		BigInteger j = two;
+		BigInteger a = BigInteger.TWO;
+		BigInteger j = BigInteger.TWO;
 		BigInteger d = null;
 	
 		while(j.compareTo(B) < 0){
 			if(j.isProbablePrime(primeCertaintyFactor)) {
 				a = a.modPow(j, n);
 			}
-			j = j.add(one);
+			j = j.add(BigInteger.ONE);
 		}
-		d = a.subtract(one).gcd(n);
+		d = a.subtract(BigInteger.ONE).gcd(n);
 		
-		if (d.compareTo(one) > 0 && d.compareTo(n) < 0)	{
+		if (d.compareTo(BigInteger.ONE) > 0 && d.compareTo(n) < 0)	{
 			return d;
 		} else {
 			return null;
@@ -41,16 +39,16 @@ public class IntegerFactorizer {
 	 * @param primeCertaintyFactor
 	 * @return prime factor or null when fails
 	 */
-	public static BigInteger pollardPMinusOne(BigInteger n, BigInteger B, List<BigInteger> primeList){
-		BigInteger a = two;
+	public static BigInteger pollardPMinusOne(BigInteger n, List<BigInteger> primeList){
+		BigInteger a = BigInteger.TWO;
 		BigInteger d = null;
 	
 		for (BigInteger j : primeList) {
 			a = a.modPow(j, n);
 		}
-		d = a.subtract(one).gcd(n);
+		d = a.subtract(BigInteger.ONE).gcd(n);
 		
-		if (d.compareTo(one) > 0 && d.compareTo(n) < 0)	{
+		if (d.compareTo(BigInteger.ONE) > 0 && d.compareTo(n) < 0)	{
 			return d;
 		} else {
 			return null;
@@ -63,7 +61,7 @@ public class IntegerFactorizer {
 		BigInteger xl = f.apply(x).mod(n);
 		BigInteger p = x.subtract(xl).gcd(n);
 	
-		while(p.compareTo(one) == 0){
+		while(p.compareTo(BigInteger.ONE) == 0){
 			x = f.apply(x).mod(n);
 			xl = f.apply(xl).mod(n);
 			xl = f.apply(xl).mod(n);
