@@ -141,18 +141,19 @@ public class IntegerFactorizer {
 	}
 
 	
-	public static BigInteger randomN(int size, int primalityCertainty) {
-		byte[] bytes = new byte[size/2];
+	public static BigInteger randomN(int size, int psize, int primalityCertainty) {
+		byte[] pbytes = new byte[psize];
+		byte[] qbytes = new byte[size-psize];
 		BigInteger p = null, q = null;
 
 		do {
-			rand.nextBytes(bytes);
-			p = new BigInteger(bytes);
+			rand.nextBytes(pbytes);
+			p = new BigInteger(pbytes);
 		} while (p.compareTo(BigInteger.ONE) <= 0 || !p.isProbablePrime(primalityCertainty) );
 		
 		do {
-			rand.nextBytes(bytes);
-			q = new BigInteger(bytes);
+			rand.nextBytes(qbytes);
+			q = new BigInteger(qbytes);
 		} while (q.compareTo(BigInteger.ONE) <= 0 || !q.isProbablePrime(primalityCertainty) );
 		
 		
@@ -188,5 +189,6 @@ public class IntegerFactorizer {
 		
 		return p.multiply(q);
 	}
-	
+
+
 }
