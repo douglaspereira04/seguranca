@@ -15,7 +15,10 @@ public class Main {
 		System.out.println(p);*/
 		
 		//BigInteger p = IntegerFactorizer.wieners(BigInteger.valueOf(160523347), BigInteger.valueOf(60728973));
-
+		
+		Function<BigInteger, BigInteger> f = x -> x.pow(2).add(BigInteger.valueOf(1));
+		
+		testPollardRho(1000, 4,  b -> b.sqrt(), f, 4);
 		testPollardPMinus1(200, 4, b -> b.sqrt(),4);
 		testPollardPMinus1(200, 8, b -> b.sqrt().sqrt(),4);
 		testPollardPMinus1(200, 16, b -> b.sqrt().sqrt().sqrt(),4);
@@ -72,6 +75,62 @@ public class Main {
 		System.out.println("\tElapsed time: "+elapsedTime+"ns");
 		System.out.println("\tRandom n success ratio: "+randomHits.get()*100.0/tests+"%");
 		System.out.println("\tStrong n success ratio: "+strongHits.get()*100.0/tests+"%");
+		
+		return elapsedTime;
+	}
+
+	
+	
+	/**
+	 * Test pollard p-1 algorithm with strong n and random n
+	 * @param tests
+	 * @param nSize
+	 * @param bcalc
+	 * @param threadAmount
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public static long testPollardRho(int tests, int nSize, Function<BigInteger, BigInteger> bcalc, Function<BigInteger, BigInteger> f, int threadAmount) throws InterruptedException {
+
+		System.out.println("Pollard Rho: (tests = "+tests+", size =~ "+nSize*8+")");
+
+		AtomicInteger rhoHits = new AtomicInteger(0), pm1Hits = new AtomicInteger(0);
+		long begin = System.nanoTime();
+		Thread[] threads = new Thread[threadAmount];
+
+		for (int i = 0; i < threads.length; i++) {
+			threads[i] = new Thread(()->{
+				BigInteger p;
+				BigInteger n = null;
+				BigInteger B = null;
+				
+				for (int j = 0; j < tests/threadAmount; j++) {
+					n = IntegerFactorizer.randomN(nSize, nSize/2, 8);
+					
+					BigInteger x1 = BigInteger.valueOf(1);
+					
+					p = IntegerFactorizer.pollardRho(n, x1, f);
+					if(p != null) {
+						rhoHits.incrementAndGet();
+					}
+					
+					B = bcalc.apply(n);
+					p = IntegerFactorizer.pollardPMinusOne(n, B, 8);
+					if(p != null) {
+						pm1Hits.incrementAndGet();
+					}
+				}
+			});
+			threads[i].start();
+		}
+		
+		for (int i = 0; i < threads.length; i++) {
+			threads[i].join();
+		}
+		long elapsedTime = System.nanoTime() - begin;
+		System.out.println("\tElapsed time: "+elapsedTime+"ns");
+		System.out.println("\tRho n success ratio: "+rhoHits.get()*100.0/tests+"%");
+		System.out.println("\tP-1 n success ratio: "+pm1Hits.get()*100.0/tests+"%");
 		
 		return elapsedTime;
 	}
