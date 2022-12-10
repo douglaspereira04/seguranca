@@ -6,23 +6,15 @@ public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
 
-		
-
-		/*Function<BigInteger, BigInteger> f = x -> x.pow(x.intValue()).add(BigInteger.valueOf(1));
-		BigInteger n = BigInteger.valueOf(7171);
-		BigInteger x1 = BigInteger.valueOf(1);
-		BigInteger p = IntegerFactorizer.pollardRho(n, x1, f);
-		System.out.println(p);*/
-		
-		//BigInteger p = IntegerFactorizer.wieners(BigInteger.valueOf(160523347), BigInteger.valueOf(60728973));
-		
 		Function<BigInteger, BigInteger> f = x -> x.pow(2).add(BigInteger.valueOf(1));
 
-		testPollardRho(500, 4,  b -> b.sqrt(), f, 4);
-		testPollardRho(500, 8,  b -> b.sqrt().sqrt(), f, 4);
+		multiTest(500, 4,  b -> b.sqrt(), f, 4);
+		multiTest(500, 8,  b -> b.sqrt().sqrt(), f, 4);
+		
 		testPollardPMinus1(200, 4, b -> b.sqrt(),4);
 		testPollardPMinus1(200, 8, b -> b.sqrt().sqrt(),4);
 		testPollardPMinus1(200, 16, b -> b.sqrt().sqrt().sqrt(),4);
+		
 		testWieners(1000, 16, 4);
 		
 	}
@@ -91,11 +83,11 @@ public class Main {
 	 * @return
 	 * @throws InterruptedException
 	 */
-	public static long testPollardRho(int tests, int nSize, Function<BigInteger, BigInteger> bcalc, Function<BigInteger, BigInteger> f, int threadAmount) throws InterruptedException {
+	public static long multiTest(int tests, int nSize, Function<BigInteger, BigInteger> bcalc, Function<BigInteger, BigInteger> f, int threadAmount) throws InterruptedException {
 
-		System.out.println("Pollard Rho: (tests = "+tests+", size =~ "+nSize*8+")");
+		System.out.println("Test Multiplo: (tests = "+tests+", size =~ "+nSize*8+")");
 
-		AtomicInteger rhoHits = new AtomicInteger(0), pm1Hits = new AtomicInteger(0);
+		AtomicInteger rhoHits = new AtomicInteger(0), pm1Hits = new AtomicInteger(0), dixonhits = new AtomicInteger(0);
 		long begin = System.nanoTime();
 		Thread[] threads = new Thread[threadAmount];
 
@@ -104,11 +96,10 @@ public class Main {
 				BigInteger p;
 				BigInteger n = null;
 				BigInteger B = null;
+				BigInteger x1 = BigInteger.valueOf(1);
 				
 				for (int j = 0; j < tests/threadAmount; j++) {
 					n = IntegerFactorizer.randomN(nSize, nSize/2, 8);
-					
-					BigInteger x1 = BigInteger.valueOf(1);
 					
 					p = IntegerFactorizer.pollardRho(n, x1, f);
 					if(p != null) {
@@ -119,6 +110,11 @@ public class Main {
 					p = IntegerFactorizer.pollardPMinusOne(n, B, 8);
 					if(p != null) {
 						pm1Hits.incrementAndGet();
+					}
+
+					p = IntegerFactorizer.dixon(n, 8);
+					if(p != null) {
+						dixonhits.incrementAndGet();
 					}
 				}
 			});
@@ -132,9 +128,13 @@ public class Main {
 		System.out.println("\tElapsed time: "+elapsedTime+"ns");
 		System.out.println("\tRho n success ratio: "+rhoHits.get()*100.0/tests+"%");
 		System.out.println("\tP-1 n success ratio: "+pm1Hits.get()*100.0/tests+"%");
+		System.out.println("\tDixon n success ratio: "+dixonhits.get()*100.0/tests+"%");
+
 		
 		return elapsedTime;
 	}
+	
+
 	
 	
 	/**
